@@ -20,12 +20,28 @@ dtype = 'float32'
 
 if __name__ == "__main__":
     
+
+    raw_env = gym.make('CartPole-v0')
     filename = "model_cartpole_3_history_200_return.pdparams"
-    agent = paddle.load(filename)
+
+    history_length = 3
+    num_hidden = 50
+    
+    num_obs_space = raw_env.observation_space.shape[0] 
+    num_actions = raw_env.action_space.n  
+    num_in = history_length * num_obs_space # history * ( obs )
+    
+    representation_model = Representation_Model(num_in, num_hidden)
+    dynamics_model = Dynamics_Model(num_hidden, num_actions)
+    prediction_model = Prediction_Model(num_hidden, num_actions)
+    
+    agent = MuZero_Agent(num_actions, representation_model, dynamics_model, prediction_model)    
+
+    model_state_dict  = paddle.load(filename)
+    agent.set_state_dict(model_state_dict )
     agent.eps = 0.1
     
-    raw_env = gym.make('CartPole-v0')
-    env = Env_Wrapper(raw_env, 3)
+    env = Env_Wrapper(raw_env, history_length)
     runner = Env_Runner(env)
        
     for i in range(100):
