@@ -22,7 +22,7 @@ def train():
     
     history_length = 3
     num_hidden = 50
-    replay_capacity = 10000
+    replay_capacity = 200
     batch_size = 64
     k = 3
     n = 10
